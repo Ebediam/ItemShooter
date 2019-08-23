@@ -22,6 +22,7 @@ namespace ItemShooter
 
         public bool isShootingAllowed;
 
+        public bool nextShotReady = true;
 
 
         protected void Awake()
@@ -42,6 +43,7 @@ namespace ItemShooter
                 shotVFX = item.transform.Find(module.particleSystemName).gameObject.GetComponent<ParticleSystem>();
             }
             
+
             item.OnHeldActionEvent += OnTriggerPressed;
             projectileOriginal = Catalog.current.GetData<ItemData>(module.projectileID, true);
             
@@ -50,19 +52,47 @@ namespace ItemShooter
         void OnTriggerPressed(Interactor interactor, Handle handle, Interactable.Action action)
         {
 
-            if (action == Interactable.Action.UseStart && !hasShot && isShootingAllowed)
+            if (action == Interactable.Action.UseStart && !hasShot && isShootingAllowed && nextShotReady)
             {
-                hasShot = true;
-                Shoot();
+                
+                if (!module.multipleShotsWithoutReleasingTrigger)
+                {
+                    hasShot = true;
+                    Invoke("Shoot", module.shotDelay);
+                }
+                else
+                {
+                    InvokeRepeating("Shoot", module.shotDelay, module.delayBetweenShots);
+                }
+                
+                
+
+
+                nextShotReady = false;
+                Invoke("Cooldown", module.delayBetweenShots);
+
+                
 
             }
 
 
             if (action == Interactable.Action.UseStop)
             {
+
                 hasShot = false;
+                if (module.multipleShotsWithoutReleasingTrigger)
+                {
+                    CancelInvoke();
+                }
+                
 
             }
+
+        }
+
+        void Cooldown()
+        {
+            nextShotReady = true;
 
         }
 

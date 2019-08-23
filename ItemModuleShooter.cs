@@ -13,6 +13,10 @@ namespace ItemShooter
         public float projectileSpeed = 40f;
         public float timeToDespawn = 1f;
 
+        public float shotDelay = 0.1f;
+        public float delayBetweenShots = 1f;
+        public bool multipleShotsWithoutReleasingTrigger = false;
+
         public override void OnItemLoaded(Item item)
         {
             base.OnItemLoaded(item);
