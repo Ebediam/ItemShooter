@@ -13,9 +13,7 @@ namespace ItemShooter
         public float projectileSpeed = 40f;
         public float timeToDespawn = 1f;
 
-        public float SFXDelay = 0f;
-        public float VFXDelay = 0f;
-        public float shotDelay = 0f;
+        public float shotDelay = 0.1f;
         public float delayBetweenShots = 1f;
         public bool multipleShotsWithoutReleasingTrigger = false;
 
