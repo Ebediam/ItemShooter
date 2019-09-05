@@ -7,6 +7,8 @@ namespace ItemShooter
     {
         public string projectileID = "Arrow1";
         public string bulletSpawnName = "ParryPoint";
+
+       
         public string audioName = "None";
         public string particleSystemName = "None";
 

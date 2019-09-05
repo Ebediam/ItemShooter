@@ -18,6 +18,9 @@ namespace ItemShooter
         public ParticleSystem shotVFX = null;
 
         public bool hasShot = false;
+
+        public Handle triggerHandle = null;
+
         ItemData projectileOriginal;
 
         public bool isShootingAllowed;
@@ -45,48 +48,64 @@ namespace ItemShooter
             
 
             item.OnHeldActionEvent += OnTriggerPressed;
+            item.OnUngrabEvent += OnGunUngrab;
+
             projectileOriginal = Catalog.current.GetData<ItemData>(module.projectileID, true);
+            triggerHandle = item.mainHandleRight;
             
+        }
+
+        void OnGunUngrab(Handle handle, Interactor interactor, bool throwing)
+        {
+            if(handle == triggerHandle)
+            {
+                CancelInvoke("Shoot");
+            }
         }
 
         void OnTriggerPressed(Interactor interactor, Handle handle, Interactable.Action action)
         {
 
-            if (action == Interactable.Action.UseStart && !hasShot && isShootingAllowed && nextShotReady)
+            if(handle == triggerHandle)
             {
-                
-                if (!module.multipleShotsWithoutReleasingTrigger)
+                if (action == Interactable.Action.UseStart && !hasShot && isShootingAllowed && nextShotReady)
                 {
-                    hasShot = true;
-                    Invoke("Shoot", module.shotDelay);
+
+                    if (!module.multipleShotsWithoutReleasingTrigger)
+                    {
+                        hasShot = true;
+                        Invoke("Shoot", module.shotDelay);
+                    }
+                    else
+                    {
+                        InvokeRepeating("Shoot", module.shotDelay, module.delayBetweenShots);
+                    }
+
+
+
+
+                    nextShotReady = false;
+                    Invoke("Cooldown", module.delayBetweenShots);
+
+
+
                 }
-                else
+
+
+                if (action == Interactable.Action.UseStop)
                 {
-                    InvokeRepeating("Shoot", module.shotDelay, module.delayBetweenShots);
+
+                    hasShot = false;
+                    if (module.multipleShotsWithoutReleasingTrigger)
+                    {
+                        CancelInvoke("Shoot");
+                    }
+
+
                 }
-                
-                
-
-
-                nextShotReady = false;
-                Invoke("Cooldown", module.delayBetweenShots);
-
-                
-
             }
 
-
-            if (action == Interactable.Action.UseStop)
-            {
-
-                hasShot = false;
-                if (module.multipleShotsWithoutReleasingTrigger)
-                {
-                    CancelInvoke("Shoot");
-                }
-                
-
-            }
+            
 
         }
 
