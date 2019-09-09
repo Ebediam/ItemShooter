@@ -1,0 +1,20 @@
+  "modules": [
+    {
+      "$type": "ItemShooter.ItemModuleShooter, ItemShooterV2_3",
+      "projectileID": "Arrow1",
+      "bulletSpawnName": "SpawnPoint",
+      "shootWithAltUse" : false,
+
+      "projectileSpeed": 40,
+      "timeToDespawn": 1,
+      "shotDelay": 0.05,
+      "delayBetweenShots": 1,
+      "multipleShotsWithoutReleasingTrigger": false,
+
+      "shootSFX" : "None",
+      "triggerPressSFX" : "None",
+      "shootVFX" : "None",
+      "triggerPressVFX" : "None"
+
+    },
+   
