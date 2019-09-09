@@ -8,9 +8,13 @@ namespace ItemShooter
         public string projectileID = "Arrow1";
         public string bulletSpawnName = "ParryPoint";
 
-       
-        public string audioName = "None";
-        public string particleSystemName = "None";
+        public bool shootWithAltUse = false;
+
+        public string shootSFX = "None";
+        public string triggerPressSFX = "None";
+
+        public string shootVFX = "None";
+        public string triggerPressVFX = "None";
 
         public float projectileSpeed = 40f;
         public float timeToDespawn = 1f;

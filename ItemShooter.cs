@@ -14,12 +14,15 @@ namespace ItemShooter
         public Transform bulletSpawn;
 
         public AudioSource shotSFX = null;
-
+        
         public ParticleSystem shotVFX = null;
+        public ParticleSystem triggerPressedVFX = null;
+
+        public AudioSource triggerPressedSFX = null;
 
         public bool hasShot = false;
 
-        public Handle triggerHandle = null;
+        
 
         ItemData projectileOriginal;
 
@@ -36,28 +39,38 @@ namespace ItemShooter
             isShootingAllowed = true;
             bulletSpawn = item.transform.Find(module.bulletSpawnName); 
             
-            if(module.audioName != "None")
+            if(module.shootSFX != "None")
             {
-                shotSFX = item.transform.Find(module.audioName).gameObject.GetComponent<AudioSource>();
+                shotSFX = item.transform.Find(module.shootSFX).gameObject.GetComponent<AudioSource>();
             }
 
-            if(module.particleSystemName != "None")
+            if (module.triggerPressSFX != "None")
             {
-                shotVFX = item.transform.Find(module.particleSystemName).gameObject.GetComponent<ParticleSystem>();
+                triggerPressedSFX = item.transform.Find(module.triggerPressSFX).gameObject.GetComponent<AudioSource>();
             }
             
+
+            if (module.shootVFX != "None")
+            {
+                shotVFX = item.transform.Find(module.shootVFX).gameObject.GetComponent<ParticleSystem>();
+            }
+
+            if (module.triggerPressVFX != "None")
+            {
+                triggerPressedVFX = item.transform.Find(module.shootVFX).gameObject.GetComponent<ParticleSystem>();
+            }
 
             item.OnHeldActionEvent += OnTriggerPressed;
             item.OnUngrabEvent += OnGunUngrab;
 
             projectileOriginal = Catalog.current.GetData<ItemData>(module.projectileID, true);
-            triggerHandle = item.mainHandleRight;
+            
             
         }
 
         void OnGunUngrab(Handle handle, Interactor interactor, bool throwing)
         {
-            if(handle == triggerHandle)
+            if(handle == item.mainHandleLeft || handle == item.mainHandleRight)
             {
                 CancelInvoke("Shoot");
             }
@@ -66,33 +79,35 @@ namespace ItemShooter
         void OnTriggerPressed(Interactor interactor, Handle handle, Interactable.Action action)
         {
 
-            if(handle == triggerHandle)
+            if (handle == item.mainHandleLeft || handle == item.mainHandleRight)
             {
-                if (action == Interactable.Action.UseStart && !hasShot && isShootingAllowed && nextShotReady)
+
+                if((action == Interactable.Action.UseStart && !module.shootWithAltUse) || (action == Interactable.Action.AlternateUseStart && module.shootWithAltUse))
                 {
-
-                    if (!module.multipleShotsWithoutReleasingTrigger)
+                    if (!hasShot && isShootingAllowed && nextShotReady)
                     {
-                        hasShot = true;
-                        Invoke("Shoot", module.shotDelay);
+
+                        if (!module.multipleShotsWithoutReleasingTrigger)
+                        {
+                            hasShot = true;
+                            triggerPressedSFX.Play();
+                            triggerPressedVFX.Play();
+                            Invoke("Shoot", module.shotDelay);
+                        }
+                        else
+                        {
+                            InvokeRepeating("Shoot", module.shotDelay, module.delayBetweenShots);
+                        }
+
+                        nextShotReady = false;
+                        Invoke("Cooldown", module.delayBetweenShots);
                     }
-                    else
-                    {
-                        InvokeRepeating("Shoot", module.shotDelay, module.delayBetweenShots);
-                    }
-
-
-
-
-                    nextShotReady = false;
-                    Invoke("Cooldown", module.delayBetweenShots);
-
-
-
                 }
 
+                
 
-                if (action == Interactable.Action.UseStop)
+
+                if ((action == Interactable.Action.UseStop && !module.shootWithAltUse) || (action == Interactable.Action.AlternateUseStop && module.shootWithAltUse))
                 {
 
                     hasShot = false;
@@ -135,7 +150,7 @@ namespace ItemShooter
             }
 
 
-            projectile.Throw(1, Item.FlyDetection.CheckAngle);
+            projectile.Throw(1, Item.FlyDetection.Forced);
             projectile.GetComponent<Rigidbody>().AddForce(projectile.transform.forward.normalized * module.projectileSpeed, ForceMode.VelocityChange);
             
             if(module.timeToDespawn != 0)
