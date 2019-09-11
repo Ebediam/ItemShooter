@@ -16,6 +16,8 @@ namespace ItemShooter
         public string shootVFX = "None";
         public string triggerPressVFX = "None";
 
+        public string magID = "None";
+
         public float projectileSpeed = 40f;
         public float timeToDespawn = 1f;
 

@@ -22,13 +22,17 @@ namespace ItemShooter
 
         public bool hasShot = false;
 
-        
+        public ObjectHolder gunHolder = null;
+
+        public Animation animation = null;
 
         ItemData projectileOriginal;
 
         public bool isShootingAllowed;
 
         public bool nextShotReady = true;
+
+        public bool magInPlace = true;
 
 
         protected void Awake()
@@ -60,6 +64,17 @@ namespace ItemShooter
                 triggerPressedVFX = item.transform.Find(module.shootVFX).gameObject.GetComponent<ParticleSystem>();
             }
 
+            if (item.GetComponentInChildren<ObjectHolder>())
+            {
+                gunHolder = item.GetComponentInChildren<ObjectHolder>();
+            }
+
+            if (item.GetComponentInChildren<Animation>())
+            {
+                animation = item.GetComponentInChildren<Animation>();
+            }
+
+
             item.OnHeldActionEvent += OnTriggerPressed;
             item.OnUngrabEvent += OnGunUngrab;
 
@@ -78,31 +93,75 @@ namespace ItemShooter
 
         void OnTriggerPressed(Interactor interactor, Handle handle, Interactable.Action action)
         {
-
+            Debug.Log("OnTriggerPressed starts");
             if (handle == item.mainHandleLeft || handle == item.mainHandleRight)
             {
-
-                if((action == Interactable.Action.UseStart && !module.shootWithAltUse) || (action == Interactable.Action.AlternateUseStart && module.shootWithAltUse))
+                Debug.Log("Handle checked");
+                if (gunHolder)
                 {
-                    if (!hasShot && isShootingAllowed && nextShotReady)
+                    if(gunHolder.holdObjects.Count > 0)
                     {
-
-                        if (!module.multipleShotsWithoutReleasingTrigger)
+                        if (gunHolder.holdObjects[0])
                         {
-                            hasShot = true;
-                            triggerPressedSFX.Play();
-                            triggerPressedVFX.Play();
-                            Invoke("Shoot", module.shotDelay);
+                            if (gunHolder.holdObjects[0].definition.itemId == module.magID)
+                            {
+                                magInPlace = true;
+                            }
+                            else
+                            {
+                                magInPlace = false;
+                            }
                         }
                         else
                         {
-                            InvokeRepeating("Shoot", module.shotDelay, module.delayBetweenShots);
+                            magInPlace = false;
                         }
+                    }
+                    else
+                    {
+                        magInPlace = false;
+                    }
+                   
 
-                        nextShotReady = false;
-                        Invoke("Cooldown", module.delayBetweenShots);
+                }
+
+                Debug.Log("Mag checked");
+
+                if (magInPlace)                    
+                {
+                    if ((action == Interactable.Action.UseStart && !module.shootWithAltUse) || (action == Interactable.Action.AlternateUseStart && module.shootWithAltUse))
+                    {
+                        Debug.Log("Button checked");
+                        if (!hasShot && isShootingAllowed && nextShotReady)
+                        {
+                            Debug.Log("Bools checked");
+                            if (!module.multipleShotsWithoutReleasingTrigger)
+                            {
+                                hasShot = true;
+                                if (triggerPressedSFX)
+                                {
+                                    triggerPressedSFX.Play();
+                                }
+
+                                if (triggerPressedVFX)
+                                {
+                                    triggerPressedVFX.Play();
+                                }
+                                
+                                Invoke("Shoot", module.shotDelay);
+                            }
+                            else
+                            {
+                                InvokeRepeating("Shoot", module.shotDelay, module.delayBetweenShots);
+                            }
+                            Debug.Log("Shoot called");
+                            nextShotReady = false;
+                            Invoke("Cooldown", module.delayBetweenShots);
+                        }
                     }
                 }
+
+                
 
                 
 
@@ -120,7 +179,7 @@ namespace ItemShooter
                 }
             }
 
-            
+            Debug.Log("OnTriggerPressed ends");
 
         }
 
@@ -135,6 +194,10 @@ namespace ItemShooter
             Item projectile = projectileOriginal.Instantiate(null);
             projectile.gameObject.SetActive(true);
 
+            if (animation)
+            {
+                animation.Play();
+            }
 
             projectile.transform.position = bulletSpawn.transform.position;
             projectile.transform.rotation = bulletSpawn.transform.rotation;
