@@ -45,23 +45,85 @@ namespace ItemShooter
             
             if(module.shootSFX != "None")
             {
-                shotSFX = item.transform.Find(module.shootSFX).gameObject.GetComponent<AudioSource>();
+                if (item.transform.Find(module.shootSFX))
+                {
+                    if (item.transform.Find(module.shootSFX).gameObject.GetComponent<AudioSource>())
+                    {
+                        shotSFX = item.transform.Find(module.shootSFX).gameObject.GetComponent<AudioSource>();
+                    }
+                    else
+                    {
+                        Debug.LogError("ItemShooter error: ShootSFX gameObject doesn't contain an Audio Source");
+                    }
+                    
+                }
+                else
+                {
+                    Debug.LogError("ItemShooter error: ShootSFX gameObject couldn't be found");
+                }
+                
             }
 
             if (module.triggerPressSFX != "None")
             {
-                triggerPressedSFX = item.transform.Find(module.triggerPressSFX).gameObject.GetComponent<AudioSource>();
+                if (item.transform.Find(module.triggerPressSFX))
+                {
+                    if (item.transform.Find(module.triggerPressSFX).gameObject.GetComponent<AudioSource>())
+                    {
+                        triggerPressedSFX = item.transform.Find(module.triggerPressSFX).gameObject.GetComponent<AudioSource>();
+                    }
+                    else
+                    {
+                        Debug.LogError("ItemShooter error: triggerPressSFX gameObject doesn't contain an Audio Source");
+                    }
+
+                }
+                else
+                {
+                    Debug.LogError("ItemShooter error: triggerPressSFX gameObject couldn't be found");
+                }
+                
             }
             
 
             if (module.shootVFX != "None")
             {
-                shotVFX = item.transform.Find(module.shootVFX).gameObject.GetComponent<ParticleSystem>();
+                if (item.transform.Find(module.shootVFX))
+                {
+                    if (item.transform.Find(module.shootVFX).gameObject.GetComponent<ParticleSystem>())
+                    {
+                        shotVFX = item.transform.Find(module.shootVFX).gameObject.GetComponent<ParticleSystem>();
+                    }
+                    else
+                    {
+                        Debug.LogError("ItemShooter error: shootVFX gameObject doesn't contain a Particle System");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("ItemShooter error: shootVFX gameObject couldn't be found");
+                }                
             }
 
             if (module.triggerPressVFX != "None")
             {
-                triggerPressedVFX = item.transform.Find(module.shootVFX).gameObject.GetComponent<ParticleSystem>();
+                if (item.transform.Find(module.triggerPressVFX))
+                {
+                    if (item.transform.Find(module.triggerPressVFX).gameObject.GetComponent<ParticleSystem>())
+                    {
+                        triggerPressedVFX = item.transform.Find(module.triggerPressVFX).gameObject.GetComponent<ParticleSystem>();
+                    }
+                    else
+                    {
+                        Debug.LogError("ItemShooter error: triggerPressVFX gameObject doesn't contain a Particle System");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("ItemShooter error: triggerPressVFX gameObject couldn't be found");
+                }
+
+                
             }
 
             if (item.GetComponentInChildren<ObjectHolder>())
@@ -83,6 +145,9 @@ namespace ItemShooter
             
         }
 
+
+        
+
         void OnGunUngrab(Handle handle, Interactor interactor, bool throwing)
         {
             if(handle == item.mainHandleLeft || handle == item.mainHandleRight)
@@ -93,10 +158,10 @@ namespace ItemShooter
 
         void OnTriggerPressed(Interactor interactor, Handle handle, Interactable.Action action)
         {
-            Debug.Log("OnTriggerPressed starts");
+           
             if (handle == item.mainHandleLeft || handle == item.mainHandleRight)
             {
-                Debug.Log("Handle checked");
+                
                 if (gunHolder)
                 {
                     if(gunHolder.holdObjects.Count > 0)
@@ -154,7 +219,7 @@ namespace ItemShooter
                             {
                                 InvokeRepeating("Shoot", module.shotDelay, module.delayBetweenShots);
                             }
-                            Debug.Log("Shoot called");
+                            
                             nextShotReady = false;
                             Invoke("Cooldown", module.delayBetweenShots);
                         }
@@ -191,36 +256,72 @@ namespace ItemShooter
 
         void Shoot()
         {
-            Item projectile = projectileOriginal.Instantiate(null);
-            projectile.gameObject.SetActive(true);
-
-            if (animation)
+            if (gunHolder)
             {
-                animation.Play();
+                if (gunHolder.holdObjects.Count > 0)
+                {
+                    if (gunHolder.holdObjects[0])
+                    {
+                        if (gunHolder.holdObjects[0].definition.itemId == module.magID)
+                        {
+                            magInPlace = true;
+                        }
+                        else
+                        {
+                            magInPlace = false;
+                        }
+                    }
+                    else
+                    {
+                        magInPlace = false;
+                    }
+                }
+                else
+                {
+                    magInPlace = false;
+                }
+
+
             }
 
-            projectile.transform.position = bulletSpawn.transform.position;
-            projectile.transform.rotation = bulletSpawn.transform.rotation;
-
-            if (shotSFX)
+            if (magInPlace)
             {
-                shotSFX.Play();
-            }
+                Item projectile = projectileOriginal.Instantiate(null);
+                projectile.gameObject.SetActive(true);
 
-            if (shotVFX)
+                if (animation)
+                {
+                    animation.Play();
+                }
+
+                projectile.transform.position = bulletSpawn.transform.position;
+                projectile.transform.rotation = bulletSpawn.transform.rotation;
+
+                if (shotSFX)
+                {
+                    shotSFX.Play();
+                }
+
+                if (shotVFX)
+                {
+                    shotVFX.Play();
+                }
+
+
+                projectile.Throw(1, Item.FlyDetection.Forced);
+                projectile.GetComponent<Rigidbody>().AddForce(projectile.transform.forward.normalized * module.projectileSpeed, ForceMode.VelocityChange);
+
+                if (module.timeToDespawn != 0)
+                {
+                    Destroy(projectile.gameObject, module.timeToDespawn);
+                    Destroy(projectile, module.timeToDespawn);
+                }
+            }
+            else
             {
-                shotVFX.Play();
+                CancelInvoke("Shoot");
             }
-
-
-            projectile.Throw(1, Item.FlyDetection.Forced);
-            projectile.GetComponent<Rigidbody>().AddForce(projectile.transform.forward.normalized * module.projectileSpeed, ForceMode.VelocityChange);
-            
-            if(module.timeToDespawn != 0)
-            {
-                Destroy(projectile.gameObject, module.timeToDespawn);
-                Destroy(projectile, module.timeToDespawn);
-            }
+           
 
         }
 
