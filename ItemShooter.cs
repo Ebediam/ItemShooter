@@ -47,9 +47,9 @@ namespace ItemShooter
             {
                 if (item.transform.Find(module.shootSFX))
                 {
-                    if (item.transform.Find(module.shootSFX).gameObject.GetComponent<AudioSource>())
+                    if (item.transform.Find(module.shootSFX).gameObject.GetComponentInChildren<AudioSource>())
                     {
-                        shotSFX = item.transform.Find(module.shootSFX).gameObject.GetComponent<AudioSource>();
+                        shotSFX = item.transform.Find(module.shootSFX).gameObject.GetComponentInChildren<AudioSource>();
                     }
                     else
                     {
@@ -68,9 +68,9 @@ namespace ItemShooter
             {
                 if (item.transform.Find(module.triggerPressSFX))
                 {
-                    if (item.transform.Find(module.triggerPressSFX).gameObject.GetComponent<AudioSource>())
+                    if (item.transform.Find(module.triggerPressSFX).gameObject.GetComponentInChildren<AudioSource>())
                     {
-                        triggerPressedSFX = item.transform.Find(module.triggerPressSFX).gameObject.GetComponent<AudioSource>();
+                        triggerPressedSFX = item.transform.Find(module.triggerPressSFX).gameObject.GetComponentInChildren<AudioSource>();
                     }
                     else
                     {
@@ -90,9 +90,9 @@ namespace ItemShooter
             {
                 if (item.transform.Find(module.shootVFX))
                 {
-                    if (item.transform.Find(module.shootVFX).gameObject.GetComponent<ParticleSystem>())
+                    if (item.transform.Find(module.shootVFX).gameObject.GetComponentInChildren<ParticleSystem>())
                     {
-                        shotVFX = item.transform.Find(module.shootVFX).gameObject.GetComponent<ParticleSystem>();
+                        shotVFX = item.transform.Find(module.shootVFX).gameObject.GetComponentInChildren<ParticleSystem>();
                     }
                     else
                     {
@@ -109,9 +109,9 @@ namespace ItemShooter
             {
                 if (item.transform.Find(module.triggerPressVFX))
                 {
-                    if (item.transform.Find(module.triggerPressVFX).gameObject.GetComponent<ParticleSystem>())
+                    if (item.transform.Find(module.triggerPressVFX).gameObject.GetComponentInChildren<ParticleSystem>())
                     {
-                        triggerPressedVFX = item.transform.Find(module.triggerPressVFX).gameObject.GetComponent<ParticleSystem>();
+                        triggerPressedVFX = item.transform.Find(module.triggerPressVFX).gameObject.GetComponentInChildren<ParticleSystem>();
                     }
                     else
                     {
