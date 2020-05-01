@@ -1,6 +1,6 @@
   "modules": [
     {
-"$type": "ItemShooter.ItemModuleShooter, ItemShooterV3_8",
+"$type": "ItemShooter.ItemModuleShooter, ItemShooterV3_9",
       "projectileID": "Arrow1",
       "bulletSpawnName": "SpawnPoint",
       "shootWithAltUse" : false,
