@@ -1,21 +1,21 @@
   "modules": [
     {
-"$type": "ItemShooter.ItemModuleShooter, ItemShooterV3_9",
-      "projectileID": "Arrow1",
-      "bulletSpawnName": "SpawnPoint",
-      "shootWithAltUse" : false,
+"$type": "ItemShooter.ItemModuleShooter, ItemShooter_V4_1",
+            "projectileID": "Arrow1",
+            "bulletSpawnName": "SpawnPoint",
+            "shootWithAltUse" : false,        
+            "projectileSpeed": 20,
+            "timeToDespawn": 0,
+            "shotDelay": 0.05,
+            "delayBetweenShots": 1,
+            "multipleShotsWithoutReleasingTrigger": false,
+            "shootOnRelease": false,
  
-      "projectileSpeed": 40,
-      "timeToDespawn": 1,
-      "shotDelay": 0.05,
-      "delayBetweenShots": 1,
-      "multipleShotsWithoutReleasingTrigger": false,
- 
-      "shootSFX" : "None",
-      "triggerPressSFX" : "None",
-      "shootVFX" : "None",
-      "triggerPressVFX" : "None",
-      "magID" : "None"
+            "shootSFX" : "None",
+            "triggerPressSFX" : "None",
+            "shootVFX" : "None",
+            "triggerPressVFX" : "None",
+            "magID" : "None"
 
 
     },
